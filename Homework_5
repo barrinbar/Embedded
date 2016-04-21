@@ -19,6 +19,7 @@ void drawClosedShape();
 void drawCircle();
 int checkSwitch();
 void initPortsForDigital(void);
+void enable();
 
 int key_pressed,i,keyVal,column  ;
 void delay(void);
@@ -124,11 +125,11 @@ void performAction(int x)
 		drawSawWave();
 	if ( x == 0xed )
 		drawTriangle();
-/*	if ( x == 0xdd )
+	if ( x == 0xdd )
 		drawClosedShape();
-	if ( x == 0xbd )
-		drawCircle();
-*/
+//	if ( x == 0xbd )
+//		drawCircle();
+
   	initPortB();
 	initPortD();
 	initPortE();
@@ -195,8 +196,7 @@ void drawSawWave()
 		while(PORTE < 0xFF)
 		{
 			PORTE++;
-			PORTDbits.RD4 = 1;
-			PORTDbits.RD4 = 0;
+			enable();
 		}
 		PORTE = 0;
 		PORTFbits.RF8 = 1;
@@ -215,14 +215,12 @@ void drawTriangle()
 		while(PORTE < 0xFF)
 		{
 			PORTE++;
-			PORTDbits.RD4 = 1;
-			PORTDbits.RD4 = 0;
+			enable();
 		}
 		while(PORTE > 0x00)
 		{
 			PORTE--;
-			PORTDbits.RD4 = 1;
-			PORTDbits.RD4 = 0;
+			enable();
 		}
 		PORTFbits.RF8 = 1;
 		if (checkSwitch()==0)
@@ -231,6 +229,105 @@ void drawTriangle()
 }
 
 
+void drawClosedShape()
+{
+	int x= 0;
+	while(1)
+	{
+/*		while (x > 0x00)
+		{
+			PORTF = 0x05;//Select DAC channel A = 0x05
+	                     // Select DAC channet b =0x06
+			PORTE=x;
+			enable();
+			PORTF = 0x06;
+			PORTE=0x00;
+			enable();
+	
+			PORTF = 0x05;
+			PORTE=0x00;
+			enable();
+			PORTF = 0x06;
+			PORTE=x;
+			enable();
+			x--;
+		}
+		x = 0xFF;
+*/
+			for (x= 0; x<0xFF;x++)
+			{
+				PORTF = 0x05;//Select DAC channel A = 0x05
+		                     // Select DAC channet b =0x06
+				PORTE=0x00;
+				enable();
+				PORTF = 0x06;
+				PORTE=x;
+				enable();
+			}
+			for (x = 0; x < 0xFF; x++)
+			{
+				PORTF = 0x05;//Select DAC channel A = 0x05
+		                     // Select DAC channet b =0x06
+				PORTE=x;
+				enable();
+				PORTF = 0x06;
+				PORTE=0x00;
+				enable();
+			}
+			for (x= 0; x<0xFF;x++)
+			{
+				PORTF = 0x05;//Select DAC channel A = 0x05
+		                     // Select DAC channet b =0x06
+				PORTE=0xFF;
+				enable();
+				PORTF = 0x06;
+				PORTE=x;
+				enable();
+			}
+			for (x = 0; x < 0xFF; x++)
+			{
+				PORTF = 0x05;//Select DAC channel A = 0x05
+		                     // Select DAC channet b =0x06
+				PORTE=x;
+				enable();
+				PORTF = 0x06;
+				PORTE=0xFF;
+				enable();
+			}
+			for (x= 0; x<0xFF/2;x++)
+			{
+				PORTF = 0x05;//Select DAC channel A = 0x05
+		                     // Select DAC channet b =0x06
+				PORTE=x;
+				enable();
+				PORTF = 0x06;
+				PORTE=0xFF-x;
+				enable();
+			}
+			for (x= 0xFF/2; x<0xFF;x++)
+			{
+				PORTF = 0x05;//Select DAC channel A = 0x05
+		                     // Select DAC channet b =0x06
+				PORTE=x;
+				enable();
+				PORTF = 0x06;
+				PORTE=x;
+				enable();
+			}
+	
+
+		PORTFbits.RF8 = 1;
+		if (checkSwitch()==0)
+				break;
+	}	
+
+}
+
+void enable()
+{
+	PORTDbits.RD4 = 1;
+	PORTDbits.RD4 = 0;
+}
 void delay(void)
 {
 	unsigned int i;
